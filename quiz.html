@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>QuizForge</title>
+<style>
+body, html {
+    margin: 0;
+    padding: 0;
+    font-family: "Poppins", sans-serif;
+    background: #f5f6fa;
+    color: #333;
+    overflow-x: hidden;
+}
+button { cursor: pointer; }
+header {
+    background: #1e90ff;
+    color: #fff;
+    padding: 15px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+}
+header h1 { margin: 0; font-size: 24px; }
+.nav-buttons button {
+    background: #fff;
+    color: #1e90ff;
+    border: none;
+    padding: 8px 15px;
+    margin-left: 10px;
+    border-radius: 5px;
+    font-weight: 500;
+    transition: 0.3s;
+}
+.nav-buttons button:hover { background: #e6f0ff; }
+
+/* --------- SECTIONS --------- */
+section {
+    display: none;
+    min-height: calc(100vh - 60px);
+    padding: 40px 20px;
+    box-sizing: border-box;
+    transition: opacity 0.5s ease;
+}
+section.active { display: block; }
+
+/* --------- HOME --------- */
+#home h2 {
+    text-align: center;
+    margin-bottom: 30px;
+    font-size: 32px;
+}
+.home-buttons {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+.home-buttons button {
+    background: #1e90ff;
+    color: #fff;
+    border: none;
+    padding: 15px 30px;
+    margin: 15px;
+    font-size: 18px;
+    border-radius: 8px;
+    transition: 0.3s;
+}
+.home-buttons button:hover { background: #0d6efd; }
+
+/* --------- QUIZ CREATE / TAKE / LIST --------- */
+.card {
+    background: #fff;
+    padding: 20px;
+    border-radius: 10px;
+    margin-bottom: 20px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+input[type=text], select {
+    width: 100%;
+    padding: 10px;
+    margin: 6px 0 12px 0;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    box-sizing: border-box;
+}
+label { font-weight: 500; margin-top: 5px; display: block; }
+
+button.primary {
+    background: #1e90ff;
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 6px;
+    transition: 0.3s;
+    margin-top: 10px;
+}
+button.primary:hover { background: #0d6efd; }
+
+.option-label { display: flex; align-items: center; margin-bottom: 6px; }
+.option-label input { margin-right: 10px; }
+
+/* --------- QUIZ LIST --------- */
+.quiz-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 20px;
+}
+.quiz-item {
+    background: #fff;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+.quiz-item h3 { margin-top: 0; }
+.quiz-item button { margin-top: 10px; }
+
+/* --------- QUIZ TAKE --------- */
+#take h2 { margin-bottom: 20px; }
+.options button {
+    display: block;
+    width: 100%;
+    margin: 10px 0;
+    padding: 12px;
+    border-radius: 6px;
+    border: 1px solid #1e90ff;
+    background: #fff;
+    transition: 0.3s;
+}
+.options button:hover { background: #1e90ff; color: #fff; }
+.progress-bar {
+    background: #e0e0e0;
+    border-radius: 10px;
+    overflow: hidden;
+    margin-bottom: 15px;
+}
+.progress-bar-inner {
+    height: 12px;
+    width: 0%;
+    background: #1e90ff;
+    transition: width 0.3s ease;
+}
+
+/* --------- RESULTS --------- */
+#results h2 { margin-bottom: 20px; }
+.result-item {
+    background: #fff;
+    padding: 15px;
+    margin-bottom: 12px;
+    border-radius: 8px;
+    box-shadow: 0 3px 8px rgba(0,0,0,0.1);
+}
+
+/* --------- LOGIN --------- */
+#login {
+    max-width: 400px;
+    margin: 0 auto;
+}
+#login input {
+    width: 100%;
+    margin-bottom: 15px;
+}
+
+/* --------- MOBILE RESPONSIVE --------- */
+@media (max-width: 600px) {
+    .home-buttons { flex-direction: column; align-items: center; }
+}
+</style>
+</head>
+<body>
+
+<header>
+    <h1>QuizForge</h1>
+    <div class="nav-buttons">
+        <button onclick="showSection('home')">Home</button>
+        <button onclick="showSection('create')">Create Quiz</button>
+        <button onclick="showSection('list')">Quiz List</button>
+        <button onclick="showSection('login')">Login</button>
+    </div>
+</header>
+
+<!-- HOME -->
+<section id="home" class="active">
+    <h2>Welcome to QuizForge</h2>
+    <div class="home-buttons">
+        <button onclick="showSection('create')">Create Quiz</button>
+        <button onclick="showSection('list')">Take Quiz</button>
+    </div>
+</section>
+
+<!-- CREATE QUIZ -->
+<section id="create">
+    <h2>Create a New Quiz</h2>
+    <div id="quiz-form">
+        <div class="card">
+            <label>Quiz Title</label>
+            <input type="text" id="quiz-title" placeholder="Enter quiz title">
+        </div>
+        <div id="questions-container"></div>
+        <button class="primary" onclick="addQuestion()">Add Question</button>
+        <button class="primary" onclick="saveQuiz()">Save Quiz</button>
+    </div>
+</section>
+
+<!-- QUIZ LIST -->
+<section id="list">
+    <h2>Available Quizzes</h2>
+    <div class="quiz-list" id="quiz-list"></div>
+</section>
+
+<!-- TAKE QUIZ -->
+<section id="take">
+    <h2 id="take-title"></h2>
+    <div class="progress-bar"><div class="progress-bar-inner" id="progress-inner"></div></div>
+    <div id="take-question"></div>
+</section>
+
+<!-- RESULTS -->
+<section id="results">
+    <h2>Your Results</h2>
+    <div id="results-container"></div>
+    <button class="primary" onclick="showSection('home')">Back Home</button>
+</section>
+
+<!-- LOGIN -->
+<section id="login">
+    <h2>Login / Register</h2>
+    <input type="text" id="username" placeholder="Enter your username">
+    <button class="primary" onclick="loginUser()">Login</button>
+</section>
+
+<script>
+// ------------- DATA -------------
+let quizzes = JSON.parse(localStorage.getItem('quizforge_quizzes')) || [];
+let currentUser = localStorage.getItem('quizforge_user') || '';
+let currentQuiz = null;
+let currentQIndex = 0;
+let takeAnswers = [];
+
+// Preload Python quiz if empty
+if (quizzes.length === 0) {
+    quizzes.push({
+        title: "Python Basics",
+        questions: [
+            {q:"What is the output of print(2+3)?", options:["23","5","Error","None"], answer:1},
+            {q:"Which keyword defines a function in Python?", options:["fun","def","function","define"], answer:1},
+            {q:"Python is:", options:["Compiled","Interpreted","Both","None"], answer:1},
+            {q:"Data type of True is?", options:["int","str","bool","float"], answer:2}
+        ],
+        creator: "Admin"
+    });
+    localStorage.setItem('quizforge_quizzes', JSON.stringify(quizzes));
+}
+
+// ------------- NAVIGATION -------------
+function showSection(id){
+    document.querySelectorAll('section').forEach(sec=>sec.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+    if(id==='list') loadQuizList();
+}
+
+// ------------- LOGIN -------------
+function loginUser(){
+    let user = document.getElementById('username').value.trim();
+    if(user!==''){
+        currentUser = user;
+        localStorage.setItem('quizforge_user', user);
+        alert('Welcome, '+user+'!');
+        showSection('home');
+    }else alert('Enter a username!');
+}
+
+// ------------- CREATE QUIZ -------------
+function addQuestion(){
+    let container = document.getElementById('questions-container');
+    let index = container.children.length;
+    let card = document.createElement('div');
+    card.className='card';
+    card.innerHTML=`
+        <label>Question ${index+1}</label>
+        <input type="text" class="q-text" placeholder="Enter question">
+        <label>Option 1</label><input type="text" class="opt-text">
+        <label>Option 2</label><input type="text" class="opt-text">
+        <label>Option 3</label><input type="text" class="opt-text">
+        <label>Option 4</label><input type="text" class="opt-text">
+        <label>Correct Option (1-4)</label><input type="number" class="correct-opt" min="1" max="4">
+    `;
+    container.appendChild(card);
+}
+
+function saveQuiz(){
+    let title = document.getElementById('quiz-title').value.trim();
+    if(title===''){ alert('Enter quiz title'); return; }
+    let qContainer = document.getElementById('questions-container');
+    if(qContainer.children.length===0){ alert('Add at least one question'); return; }
+
+    let questions=[];
+    for(let card of qContainer.children){
+        let qtxt = card.querySelector('.q-text').value.trim();
+        let opts = Array.from(card.querySelectorAll('.opt-text')).map(x=>x.value.trim());
+        let ans = parseInt(card.querySelector('.correct-opt').value)-1;
+        if(qtxt==='' || opts.some(o=>o==='') || isNaN(ans)){ alert('Fill all fields correctly'); return; }
+        questions.push({q:qtxt, options:opts, answer:ans});
+    }
+    quizzes.push({title, questions, creator:currentUser||"Anonymous"});
+    localStorage.setItem('quizforge_quizzes', JSON.stringify(quizzes));
+    alert('Quiz saved!');
+    // reset form
+    document.getElementById('quiz-title').value='';
+    document.getElementById('questions-container').innerHTML='';
+    showSection('list');
+}
+
+// ------------- QUIZ LIST -------------
+function loadQuizList(){
+    let container = document.getElementById('quiz-list');
+    container.innerHTML='';
+    quizzes.forEach((quiz,i)=>{
+        let div=document.createElement('div');
+        div.className='quiz-item';
+        div.innerHTML=`
+            <h3>${quiz.title}</h3>
+            <p>Created by: ${quiz.creator}</p>
+            <button class="primary" onclick="startQuiz(${i})">Take Quiz</button>
+        `;
+        container.appendChild(div);
+    });
+}
+
+// ------------- TAKE QUIZ -------------
+function startQuiz(index){
+    currentQuiz = quizzes[index];
+    currentQIndex=0;
+    takeAnswers=[];
+    document.getElementById('take-title').innerText=currentQuiz.title;
+    showSection('take');
+    showQuestion();
+}
+
+function showQuestion(){
+    let qobj = currentQuiz.questions[currentQIndex];
+    let container = document.getElementById('take-question');
+    container.innerHTML = `<h3>${qobj.q}</h3><div class="options"></div>`;
+    let optionsDiv = container.querySelector('.options');
+    qobj.options.forEach((opt,i)=>{
+        let btn = document.createElement('button');
+        btn.innerText=opt;
+        btn.onclick=()=> selectAnswer(i);
+        optionsDiv.appendChild(btn);
+    });
+    // progress bar
+    let progress = (currentQIndex+1)/currentQuiz.questions.length*100;
+    document.getElementById('progress-inner').style.width=progress+'%';
+}
+
+function selectAnswer(i){
+    takeAnswers[currentQIndex]=i;
+    currentQIndex++;
+    if(currentQIndex<currentQuiz.questions.length) showQuestion();
+    else showResults();
+}
+
+// ------------- RESULTS -------------
+function showResults(){
+    let container = document.getElementById('results-container');
+    container.innerHTML='';
+    let score=0;
+    currentQuiz.questions.forEach((q,i)=>{
+        let your = takeAnswers[i];
+        let correct = q.answer;
+        if(your===correct) score++;
+        let div = document.createElement('div');
+        div.className='result-item';
+        div.innerHTML=`<h4>Q${i+1}: ${q.q}</h4>
+        <p>Your Answer: ${q.options[your]||"Not answered"}</p>
+        <p>Correct Answer: ${q.options[correct]}</p>`;
+        container.appendChild(div);
+    });
+    container.innerHTML=`<h3>Score: ${score}/${currentQuiz.questions.length}</h3>`+container.innerHTML;
+    showSection('results');
+}
+</script>
+</body>
+</html>
